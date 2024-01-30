@@ -8,12 +8,12 @@ import { Event } from '../../Types/Event';
 import EventCard from '../Shared/EventCard/EventCard';
 import AppBar from '../Shared/AppBar/AppBar';
 import LOCALE from '../../Constant/LOCALE';
-import URL from '../../Constant/URL';
 import CITY from '../../Constant/CITY';
 import PATH from '../../Constant/PATH';
-import PAGE_TITLE from '../../Constant/TITLE';
 import flag_gb from '../../Assets/flag_gb.png';
 import {useNavigate} from 'react-router-dom';
+import useFetchEvents from '../../Effects/useFetchEvents';
+import usePathAsTitle from '../../Effects/usePathAsTitle';
 
 function Events(): JSX.Element {
   const [events, setEvents] = useState<Event[]>([]);
@@ -21,30 +21,8 @@ function Events(): JSX.Element {
   const [searchText, setSearchText] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const response = await fetch(URL.BASE_URL);
-        const events = (await response.json()) as Event[];
-        setEvents(events);
-      } catch (e: any) {
-        if (e.name === "AbortError") {
-          console.log("Aborted");
-          return;
-        }
-      }
-    };
-
-    fetchEvents();
-  }, []);
-
-  useEffect(() => {
-    // Set the title based on the current route
-    if (location.pathname === PATH.EVENTS) {
-      setTitle(PAGE_TITLE.EVENTS);
-    } else if (location.pathname === PATH.CART) { 
-      setTitle(PAGE_TITLE.CART);
-  }}, [location]);
+  useFetchEvents(setEvents);
+  usePathAsTitle(setTitle);
 
   const filteredEvents = events.filter(event =>
     event.title.toLowerCase().includes(searchText.toLowerCase())
