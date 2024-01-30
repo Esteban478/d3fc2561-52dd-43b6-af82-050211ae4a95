@@ -110,7 +110,7 @@ function App(): JSX.Element {
     return formattedDate;
   }
 
-  const groupedEvents: { [date: string]: Event[] } = events.reduce((acc, event: Event) => {
+  const sortedEvents: { [date: string]: Event[] } = events.reduce((acc, event: Event) => {
     const formattedDate = formatDate(event.date, 'en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
     if (acc[formattedDate]) {
       acc[formattedDate].push(event);
@@ -120,9 +120,24 @@ function App(): JSX.Element {
     return acc;
   }, {} as { [date: string]: Event[] });
 
-  const eventDates = Object.keys(groupedEvents);
+  const eventDates = Object.keys(sortedEvents);
   const oldestDate = formatDate(eventDates.sort()[0], 'de-DE');
   const newestDate = formatDate(eventDates.sort()[eventDates.length - 1], 'de-DE');
+  const [cartItems, setCartItems] = useState([] as Event[]);
+
+  const handleAddToCart = (event: Event) => {
+    // Remove the event from groupedEvents
+    const updatedEvents = events.filter((e: Event) => e._id !== event._id);
+
+    // Add the event to cartItems
+    const updatedCartItems = [...cartItems, event];
+
+    // Update the state
+    setEvents(updatedEvents);
+    setCartItems(updatedCartItems);
+
+    console.log(updatedCartItems)
+  };
 
   return (
     <>
@@ -149,7 +164,7 @@ function App(): JSX.Element {
           </IconButton>
           <StyledBadge             
           sx={{ marginLeft: 'auto'}}
-          badgeContent={4}
+          badgeContent={cartItems.length}
           color="secondary">
             <IconButton
               size="large"
@@ -180,10 +195,10 @@ function App(): JSX.Element {
             Public Events
           </Typography>
         </Grid>
-        {Object.entries(groupedEvents).map(([date, events]) => (
+        {Object.entries(sortedEvents).map(([date, events]) => (
           <Grid container item xs={12} spacing={2} key={date}>
             <Grid item xs={12} paddingTop={1} paddingBottom={1}>
-              <Typography variant="h5" gutterBottom>
+              <Typography padding={1} variant="h5" gutterBottom>
                 {date}
               </Typography>
             </Grid>
@@ -227,18 +242,22 @@ function App(): JSX.Element {
                     | Ends: {formatDate(event.endTime, 'de-DE' ,{ hour: 'numeric', minute: 'numeric', second: 'numeric' })}
                   </Typography>
                 </CardContent>
-                <CardActions 
-                    disableSpacing
-                    sx={{
-                      alignSelf: "stretch",
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      alignItems: "flex-start",
-                      p: 1,
-                    }}
+                <CardActions
+                  disableSpacing
+                  sx={{
+                    alignSelf: "stretch",
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    alignItems: "flex-start",
+                    p: 1,
+                  }}
+                >
+                  <IconButton
+                    color="primary"
+                    aria-label="add to cart"
+                    onClick={() => handleAddToCart(event)}
                   >
-                  <IconButton color="primary" aria-label="add to cart">
-                    <AddCircleIcon fontSize='large' />
+                    <AddCircleIcon fontSize="large" />
                   </IconButton>
                 </CardActions>
                 </Card>
