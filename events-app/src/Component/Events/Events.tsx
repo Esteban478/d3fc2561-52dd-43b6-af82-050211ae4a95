@@ -1,22 +1,12 @@
-import { useEffect, useState } from 'react';
-import { Avatar, Badge, BadgeProps, Box, Card, CardActions, CardContent, CardHeader, CardMedia, Chip, Grid } from '@mui/material'
-import { styled, alpha } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
+import React, { useEffect, useState } from 'react';
+import { Avatar, Box, Chip, Grid } from '@mui/material'
 import Typography from '@mui/material/Typography';
-import InputBase from '@mui/material/InputBase';
-import SearchIcon from '@mui/icons-material/Search';
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
-import FilterAltOffOutlinedIcon from '@mui/icons-material/FilterAltOffOutlined';
-import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import '/src/App.css';
 import { formatDate } from '../../Library';
 import { Event } from '../../Types/Event';
+import EventCard from '../Shared/EventCard/EventCard';
+import AppBar from '../Shared/AppBar/AppBar';
 import LOCALE from '../../Constant/LOCALE';
 import URL from '../../Constant/URL';
 import CITY from '../../Constant/CITY';
@@ -25,61 +15,12 @@ import PAGE_TITLE from '../../Constant/TITLE';
 import flag_gb from '../../Assets/flag_gb.png';
 import {useNavigate} from 'react-router-dom';
 
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginRight: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
-    marginRight: theme.spacing(1),
-    width: 'auto',
-  },
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  width: '100%',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    [theme.breakpoints.up('sm')]: {
-      width: '12ch',
-      '&:focus': {
-        width: '20ch',
-      },
-    },
-  },
-}));
-
-const StyledBadge = styled(Badge)<BadgeProps>(() => ({
-  '& .MuiBadge-badge': {
-    right: 8,
-    top: 16,
-  },
-}));
-
 function Events(): JSX.Element {
   const [events, setEvents] = useState<Event[]>([]);
   const [title, setTitle] = useState<string>();
   const [searchText, setSearchText] = useState('');
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -128,79 +69,49 @@ function Events(): JSX.Element {
     setSearchText(event.target.value)
   }
 
+  const handleResetFilter = () => {
+    setSearchText('')
+  }    
+
   const handleAddToCart = (event: Event) => {
-    // Remove the event from groupedEvents
+    // Remove the event from events
     const updatedEvents = events.filter((e: Event) => e._id !== event._id);
 
-    // Add the event to cartItems
+    // Add the event to the cartItems
     const updatedCartItems = [...cartItems, event];
 
     // Update the state
     setEvents(updatedEvents);
     setCartItems(updatedCartItems);
-
-    console.log(updatedCartItems)
   };
 
   const handleOpenCart = () => {
     navigate(PATH.CART, {replace: false});  
   }
 
+  const searchDisabled = () => {
+    location.pathname === PATH.EVENTS ?? true;
+  } 
+
   return (
   <HelmetProvider>
+    
     <Helmet>
       <title>
         {title ? title : ""}
       </title>
     </Helmet>
-    <Box sx={{ height: 60 }}>
-      <AppBar position="fixed">
-        <Toolbar>
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-              value={searchText}
-              onChange={handleSearch}
-            />
-          </Search>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="clear-filter"
-            sx={{ mr: 4 }}
-          >
-          {searchText ? 
-            <FilterAltOffOutlinedIcon
-              onClick={() => setSearchText('')}
-            />
-            : 
-            <FilterAltOutlinedIcon/>}
-          </IconButton>
-          <StyledBadge             
-          sx={{ marginLeft: 'auto'}}
-          badgeContent={cartItems.length}
-          color="secondary">
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="shopping-cart"
-              disabled={cartItems.length === 0}
-              onClick={handleOpenCart}
-            >
-              <ShoppingCartOutlinedIcon/>
-            </IconButton>
-          </StyledBadge>
-        </Toolbar>
-      </AppBar>
-    </Box>
+      
+    <AppBar
+      searchText={searchText}
+      handleSearch={handleSearch}
+      handleResetFilter={handleResetFilter}
+      cartItems={cartItems}
+      handleOpenCart={handleOpenCart}
+    />
 
-    <Grid item container 
+    <Box style={{ height: 'calc(100vh - 64px)', overflow: 'auto' }}>
+      <Grid item container 
       spacing={2} 
       md={12} 
       alignItems="center"
@@ -216,84 +127,36 @@ function Events(): JSX.Element {
             Public Events
           </Typography>
         </Grid>
-        {Object.entries(sortedEvents).map(([date, events]) => (
-          <Grid container item xs={12} spacing={2} key={date}>
-            <Grid item xs={12} paddingTop={1} paddingBottom={1}>
-              <Typography padding={1} variant="h5" gutterBottom>
-                {date}
-              </Typography>
-            </Grid>
-            {events.map((event) => (
-              <Grid item xs={12} sm={6} md={4} key={event._id}>
-                <Card sx={{ minHeight: 600}} key={event._id}>
-                <CardHeader
-                  sx={{ 
-                    height: 60
-                  }}
-                  avatar={
-                    <Avatar aria-label="event">
-                      S
-                    </Avatar>
-                  }
-                  title={event.title}
-                />
-                <CardMedia
-                  sx={{minHeight: 420, objectFit: "contain" }}
-                  image={event.flyerFront? event.flyerFront : "https://via.placeholder.com/300x300.png?text=No+Image"}
-                  title={event.title}
-                />
-                <CardContent>
-                  <Typography variant="body1" color="text.primary">
-                  <IconButton
-                    size="small"
-                    edge="start"
-                    sx={{ mb: 1}}
-                    color="primary"
-                    aria-label="show-location"
-                    onClick={() => window.open(event.venue.direction, "_blank")}
-                  >
-                    <LocationOnIcon fontSize='small'/>
-                  </IconButton>                    
-                    {event.venue.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Starts: {formatDate(event.startTime, LOCALE.DE, { hour: 'numeric', minute: 'numeric', second: 'numeric' })}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Ends: {formatDate(event.endTime, LOCALE.DE ,{ hour: 'numeric', minute: 'numeric', second: 'numeric' })}
-                  </Typography>
-                    <div style={{ display: "inline-flex", padding: 4 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        {event.attending}
-                      </Typography>
-                      <PeopleAltOutlinedIcon fontSize='small'/>
-                    </div>
-                </CardContent>
-                <CardActions
-                  disableSpacing
-                  sx={{
-                    alignSelf: "stretch",
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    alignItems: "flex-start",
-                    p: 1,
-                  }}
-                >
-                  <IconButton
-                    color="primary"
-                    aria-label="add to cart"
-                    onClick={() => handleAddToCart(event)}
-                  >
-                    <AddCircleIcon fontSize="large" />
-                  </IconButton>
-                </CardActions>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        ))}
       </Grid>
-    </Grid>
+
+      {Object.entries(sortedEvents).map(([date, events]) => (
+        <Grid container item lg={8} spacing={2} key={date}>
+
+          <Grid item xs={12} paddingTop={1} paddingBottom={1} key={date}>
+          <Typography padding={1} variant="h5" gutterBottom style={{ position: 'sticky', top: '0', backgroundColor: '#fff', zIndex: 1 }}>
+              {date}
+            </Typography>
+          </Grid>
+
+          {events.map((event) => (
+            <EventCard
+              key={event._id}
+              event={event}
+              handleAddToCart={handleAddToCart} 
+              id={event._id}
+              title={event.title}
+              flyerFront={event.flyerFront}
+              startTime={event.startTime}
+              endTime={event.endTime}
+              attending={event.attending}
+              venue={event.venue}            
+              />
+          ))}
+
+        </Grid>
+      ))}
+      </Grid>
+    </Box>
   </HelmetProvider>
   )
 }

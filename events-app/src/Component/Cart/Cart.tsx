@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Avatar, Badge, BadgeProps, Box, Card, CardActions, CardContent, CardHeader, CardMedia, Chip, Grid } from '@mui/material'
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
@@ -8,11 +8,22 @@ import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import FilterAltOffOutlinedIcon from '@mui/icons-material/FilterAltOffOutlined';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
+import { Helmet, HelmetProvider } from "react-helmet-async";
 import '/src/App.css';
-import BASE_URL from '../../Constant/URL';
+import { formatDate } from '../../Library';
+import { Event } from '../../Types/Event';
+import LOCALE from '../../Constant/LOCALE';
+import URL from '../../Constant/URL';
+import CITY from '../../Constant/CITY';
+import PATH from '../../Constant/PATH';
+import PAGE_TITLE from '../../Constant/TITLE';
+import flag_gb from '../../Assets/flag_gb.png';
+import {useNavigate} from 'react-router-dom';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -63,34 +74,16 @@ const StyledBadge = styled(Badge)<BadgeProps>(() => ({
   },
 }));
 
-interface Event {
-  _id: string;
-  title: string;
-  flyerFront: string;
-  attending: number;
-  date: string;
-  venue: Venue;
-  startTime: string;
-  endTime: string;
-  city: string;
-  country: string;
-}
-
-interface Venue {
-  id: string
-  name: string
-  contentUrl: string
-  live: boolean
-  direction: string
-}
-
 function Cart(): JSX.Element {
   const [events, setEvents] = useState<Event[]>([]);
+  const [title, setTitle] = useState<string>();
+  const [searchText, setSearchText] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch(`${BASE_URL}`);
+        const response = await fetch(URL.BASE_URL);
         const events = (await response.json()) as Event[];
         setEvents(events);
       } catch (e: any) {
@@ -104,13 +97,20 @@ function Cart(): JSX.Element {
     fetchEvents();
   }, []);
 
-  function formatDate(date: string, locale?: string, options?: Object): string {
-    const formattedDate = new Date(date).toLocaleDateString(locale, options);
-    return formattedDate;
-  }
+  useEffect(() => {
+    // Set the title based on the current route
+    if (location.pathname === PATH.EVENTS) {
+      setTitle(PAGE_TITLE.EVENTS);
+    } else if (location.pathname === PATH.CART) { 
+      setTitle(PAGE_TITLE.CART);
+  }}, [location]);
 
-  const sortedEvents: { [date: string]: Event[] } = events.reduce((acc, event: Event) => {
-    const formattedDate = formatDate(event.date, 'en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  const filteredEvents = events.filter(event =>
+    event.title.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  const sortedEvents: { [date: string]: Event[] } = filteredEvents.reduce((acc, event: Event) => {
+  const formattedDate = formatDate(event.date, LOCALE.US, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
     if (acc[formattedDate]) {
       acc[formattedDate].push(event);
     } else {
@@ -120,27 +120,40 @@ function Cart(): JSX.Element {
   }, {} as { [date: string]: Event[] });
 
   const eventDates = Object.keys(sortedEvents);
-  const oldestDate = formatDate(eventDates.sort()[0], 'de-DE');
-  const newestDate = formatDate(eventDates.sort()[eventDates.length - 1], 'de-DE');
   const [cartItems, setCartItems] = useState([] as Event[]);
 
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => { 
+    setSearchText(event.target.value)
+  }
+
+  const handleResetFilter = () => {
+    setSearchText('')
+  }    
+
   const handleAddToCart = (event: Event) => {
-    // Remove the event from groupedEvents
+    // Remove the event from events
     const updatedEvents = events.filter((e: Event) => e._id !== event._id);
 
-    // Add the event to cartItems
+    // Add the event to the cartItems
     const updatedCartItems = [...cartItems, event];
 
     // Update the state
     setEvents(updatedEvents);
     setCartItems(updatedCartItems);
-
-    console.log(updatedCartItems)
   };
 
+  const handleOpenCart = () => {
+    navigate(PATH.CART, {replace: false});  
+  }
+
   return (
-    <>
-    <Box sx={{ height: 60 }}>
+  <HelmetProvider>
+    <Helmet>
+      <title>
+        {title ? title : ""}
+      </title>
+    </Helmet>
+    <Box sx={{ height: 64 }}>
       <AppBar position="fixed">
         <Toolbar>
           <Search>
@@ -150,6 +163,8 @@ function Cart(): JSX.Element {
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
+              value={searchText}
+              onChange={handleSearch}
             />
           </Search>
           <IconButton
@@ -159,7 +174,12 @@ function Cart(): JSX.Element {
             aria-label="clear-filter"
             sx={{ mr: 4 }}
           >
-            <FilterAltOutlinedIcon />
+          {searchText ? 
+            <FilterAltOffOutlinedIcon
+              onClick={handleResetFilter}
+            />
+            : 
+            <FilterAltOutlinedIcon/>}
           </IconButton>
           <StyledBadge             
           sx={{ marginLeft: 'auto'}}
@@ -170,92 +190,96 @@ function Cart(): JSX.Element {
               edge="start"
               color="inherit"
               aria-label="shopping-cart"
+              disabled={cartItems.length === 0}
+              onClick={handleOpenCart}
             >
-              <ShoppingCartOutlinedIcon />
+              <ShoppingCartOutlinedIcon/>
             </IconButton>
           </StyledBadge>
         </Toolbar>
       </AppBar>
     </Box>
-
+    <Box style={{ height: 'calc(100vh - 64px)', overflow: 'auto' }}>
     <Grid item container 
       spacing={2} 
       md={12} 
       alignItems="center"
       justifyContent="center"
       >
-      <Grid container item lg={8}>
-        <Grid item xs={12}>
-          <Typography variant="h4" component="h1" gutterBottom>
-            Shopping Cart
-          </Typography>
-        </Grid>
-          <Grid container item xs={12} spacing={2}>
-            {cartItems.map((event) => (
-              <Grid item xs={12} sm={6} md={4} key={event._id}>
-                <Card sx={{ minHeight: 600}} key={event._id}>
-                <CardHeader
-                  sx={{ 
-                    height: 60
-                  }}
-                  avatar={
-                    <Avatar aria-label="event">
-                      S
-                    </Avatar>
-                  }
-                  title={event.title}
-                />
-                <CardMedia
-                  sx={{minHeight: 420, objectFit: "contain" }}
-                  image={event.flyerFront? event.flyerFront : "https://via.placeholder.com/300x300.png?text=No+Image"}
-                  title={event.title}
-                />
-                <CardContent>
-                  <Typography variant="body1" color="text.secondary">
-                  <IconButton
-                    size="small"
-                    edge="start"
-                    sx={{ mb: 1}}
-                    color="primary"
-                    aria-label="show-location"
-                    onClick={() => window.open(event.venue.direction, "_blank")}
-                  >
-                    <LocationOnIcon fontSize='small'/>
-                  </IconButton>                    
-                    {event.venue.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    | Starts: {formatDate(event.startTime, 'de-DE', { hour: 'numeric', minute: 'numeric', second: 'numeric' })}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    | Ends: {formatDate(event.endTime, 'de-DE' ,{ hour: 'numeric', minute: 'numeric', second: 'numeric' })}
-                  </Typography>
-                </CardContent>
-                <CardActions
-                  disableSpacing
-                  sx={{
-                    alignSelf: "stretch",
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    alignItems: "flex-start",
-                    p: 1,
-                  }}
+      {Object.entries(sortedEvents).map(([date]) => (
+        <Grid container item lg={8} spacing={2} key={date}>
+          {cartItems.map((event) => (
+            <Grid item xs={12} sm={6} md={4} key={event._id}>
+              <Card sx={{ minHeight: 600}} key={event._id}>
+              <CardHeader
+                sx={{ 
+                  height: 60
+                }}
+                avatar={
+                  <Avatar aria-label="event">
+                    S
+                  </Avatar>
+                }
+                title={event.title}
+              />
+              <CardMedia
+                sx={{minHeight: 420, objectFit: "contain" }}
+                image={event.flyerFront? event.flyerFront : "https://via.placeholder.com/300x300.png?text=No+Image"}
+                title={event.title}
+              />
+              <CardContent>
+                <Typography variant="body1" color="text.primary">
+                <IconButton
+                  size="small"
+                  edge="start"
+                  sx={{ mb: 1}}
+                  color="primary"
+                  aria-label="show-location"
+                  onClick={() => window.open(event.venue.direction, "_blank")}
                 >
-                  <IconButton
-                    color="primary"
-                    aria-label="add to cart"
-                    onClick={() => handleAddToCart(event)}
-                  >
-                    <AddCircleIcon fontSize="large" />
-                  </IconButton>
-                </CardActions>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                  <LocationOnIcon fontSize='small'/>
+                </IconButton>                    
+                  {event.venue.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Starts: {formatDate(event.startTime, LOCALE.DE, { hour: 'numeric', minute: 'numeric', second: 'numeric' })}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Ends: {formatDate(event.endTime, LOCALE.DE ,{ hour: 'numeric', minute: 'numeric', second: 'numeric' })}
+                </Typography>
+                  <div style={{ display: "inline-flex", padding: 4 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      {event.attending}
+                    </Typography>
+                    <PeopleAltOutlinedIcon fontSize='small'/>
+                  </div>
+              </CardContent>
+              <CardActions
+                disableSpacing
+                sx={{
+                  alignSelf: "stretch",
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  alignItems: "flex-start",
+                  p: 1,
+                }}
+              >
+                <IconButton
+                  color="primary"
+                  aria-label="add to cart"
+                  onClick={() => handleAddToCart(event)}
+                >
+                  <AddCircleIcon fontSize="large" />
+                </IconButton>
+              </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      ))}
       </Grid>
-    </Grid>
-    </>
+    </Box>
+  </HelmetProvider>
   )
 }
 
