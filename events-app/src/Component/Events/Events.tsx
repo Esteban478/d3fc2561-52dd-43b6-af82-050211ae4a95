@@ -73,7 +73,7 @@ function Events({
                 label={CITY.LONDON}
                 variant="outlined"
               />
-              <Chip label={`${newestDate} - ${oldestDate}`} variant="outlined" />
+              <Chip label={`${oldestDate} - ${newestDate}`} variant="outlined" />
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h4" component="h1" gutterBottom>

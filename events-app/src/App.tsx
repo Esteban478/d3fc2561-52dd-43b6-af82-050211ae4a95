@@ -56,8 +56,9 @@ function App() {
       )
   );
 
-  const sortedEvents: { [date: string]: Event[] } = filteredEvents.reduce(
-    (acc, event: Event) => {
+  const sortedEvents: { [date: string]: Event[] } = filteredEvents
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .reduce((acc, event: Event) => {
       const formattedDate = formatDate(event.date, LOCALE.US, {
         weekday: `${DATE_FORMAT.SHORT}`,
         month: `${DATE_FORMAT.SHORT}`,
@@ -70,17 +71,13 @@ function App() {
         acc[formattedDate] = [event];
       }
       return acc;
-    },
-    {} as { [date: string]: Event[] }
-  );
+    }, {} as { [date: string]: Event[] });
 
   const eventDates = Object.keys(sortedEvents);
-  const oldestDate = formatDate(eventDates.sort()[0], LOCALE.DE);
-  const newestDate = formatDate(
-    eventDates.sort()[eventDates.length - 1],
-    LOCALE.DE
-  );
-
+  const sortedEventDates = eventDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+  const oldestDate = formatDate(sortedEventDates[0], LOCALE.DE);
+  const newestDate = formatDate(sortedEventDates[sortedEventDates.length - 1], LOCALE.DE);
+  
   const appRoutes = useRoutes([
     {
       path: '/events',
