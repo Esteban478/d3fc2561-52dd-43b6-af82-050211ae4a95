@@ -68,7 +68,7 @@ const EventCard = ({
                     title={title}
                 />
                 <CardMedia
-                    sx={{ minHeight: 420, objectFit: 'contain' }}
+                    sx={{ minHeight: 420, backgroundSize: 'cover', backgroundFit: 'contain'}}
                     image={
                         flyerFront
                             ? flyerFront
@@ -76,36 +76,41 @@ const EventCard = ({
                     }
                     title={title}
                 />
-                <CardContent sx={{paddingBottom: 0}}>
-                    <Typography variant="body1" color="text.primary">
-                        <IconButton
-                            size="small"
-                            edge="start"
-                            sx={{ mb: 1 }}
-                            color="primary"
-                            aria-label="show-location"
-                            onClick={handleOpenDirection}
-                        >
-                            <LocationOnIcon fontSize="small" />
-                        </IconButton>
-                        {venue.name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        Starts:{' '}
-                        {formatDate(startTime, LOCALE.DE, {
-                            hour: `${DATE_FORMAT.NUMERIC}`,
-                            minute: `${DATE_FORMAT.NUMERIC}`,
-                            second: `${DATE_FORMAT.NUMERIC}`,
-                        })}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        Ends:{' '}
-                        {formatDate(endTime, LOCALE.DE, {
-                            hour: `${DATE_FORMAT.NUMERIC}`,
-                            minute: `${DATE_FORMAT.NUMERIC}`,
-                            second: `${DATE_FORMAT.NUMERIC}`,
-                        })}
-                    </Typography>
+                    <CardContent sx={{paddingBottom: 0}}>
+                        <Typography variant="body1" color="text.primary">
+                            <IconButton
+                                size="small"
+                                edge="start"
+                                sx={{ mb: 1 }}
+                                color="primary"
+                                aria-label="show-location"
+                                onClick={handleOpenDirection}
+                            >
+                                <LocationOnIcon fontSize="small" />
+                            </IconButton>
+                            {venue.name}
+                        </Typography>
+                        {startTime && (
+                            <Typography variant="body2" color="text.secondary">
+                                Starts:{' '}
+                                {formatDate(startTime, LOCALE.DE, {
+                                    hour: `${DATE_FORMAT.NUMERIC}`,
+                                    minute: `${DATE_FORMAT.NUMERIC}`,
+                                    second: `${DATE_FORMAT.NUMERIC}`,
+                                })}
+                            </Typography>
+                        )}
+
+                        {endTime && (
+                            <Typography variant="body2" color="text.secondary">
+                                Ends:{' '}
+                                {formatDate(endTime, LOCALE.DE, {
+                                    hour: `${DATE_FORMAT.NUMERIC}`,
+                                    minute: `${DATE_FORMAT.NUMERIC}`,
+                                    second: `${DATE_FORMAT.NUMERIC}`,
+                                })}
+                            </Typography>
+                        )}
                     <Tooltip title={getArtistNames(artists)}>
                         <Typography noWrap variant="body2" color="text.secondary">
                             {getArtistNames(artists)}
