@@ -5,12 +5,12 @@ import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 import FilterAltOffOutlinedIcon from '@mui/icons-material/FilterAltOffOutlined';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 
-interface AppBarProps {
+interface TitleBarProps {
     searchText: string;
     handleSearch: (event: React.ChangeEvent<HTMLInputElement>) => void;
     handleResetFilter: () => void;
     cartItems: any[];
-    handleOpenCart: () => void;
+    handleOpenCart?: () => void;
 }
 
 const Search = styled('div')(({ theme }) => ({
@@ -62,7 +62,7 @@ const Search = styled('div')(({ theme }) => ({
     },
   }));
 
-const AppBarComponent: React.FC<AppBarProps> = ({
+const TitleBar: React.FC<TitleBarProps> = ({
     searchText,
     handleSearch,
     handleResetFilter,
@@ -112,4 +112,4 @@ const AppBarComponent: React.FC<AppBarProps> = ({
     );
 };
 
-export default AppBarComponent;
+export default TitleBar;

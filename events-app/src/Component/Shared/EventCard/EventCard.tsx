@@ -16,6 +16,7 @@ import { formatDate } from '../../../Library';
 import { Event } from '../../../Types/Event';
 import { Venue } from '../../../Types/Venue';
 import LOCALE from '../../../Constant/LOCALE';
+import URL from '../../../Constant/URL';
 
 interface EventCardProps {
     event: Event;
@@ -26,7 +27,8 @@ interface EventCardProps {
     endTime: string;
     attending: number;
     venue: Venue;
-    handleAddToCart: (event: any) => void;
+    handleAddToCart?: (event: any) => void;
+    handleRemoveFromCart?: (event: any) => void;
 }
 
 const EventCard = ({
@@ -39,6 +41,7 @@ const EventCard = ({
     venue,
     id,
     handleAddToCart,
+    handleRemoveFromCart
 }: EventCardProps) => {
     const handleOpenDirection = () => {
         window.open(venue.direction, '_blank');
@@ -59,11 +62,11 @@ const EventCard = ({
                     image={
                         flyerFront
                             ? flyerFront
-                            : 'https://via.placeholder.com/300x300.png?text=No+Image'
+                            : URL.NO_IMAGE
                     }
                     title={title}
                 />
-                <CardContent>
+                <CardContent sx={{paddingBottom: 0}}>
                     <Typography variant="body1" color="text.primary">
                         <IconButton
                             size="small"
@@ -108,15 +111,27 @@ const EventCard = ({
                         justifyContent: 'flex-end',
                         alignItems: 'flex-start',
                         p: 1,
+                        paddingTop: 0,
                     }}
                 >
-                    <IconButton
+                    {
+                    handleRemoveFromCart && <IconButton
+                        color="secondary"
+                        aria-label="remove from cart"
+                        onClick={() => handleRemoveFromCart(event)}
+                    >
+                        <AddCircleIcon fontSize="large" />
+                    </IconButton>
+                    }
+                    {
+                    handleAddToCart && <IconButton
                         color="primary"
                         aria-label="add to cart"
                         onClick={() => handleAddToCart(event)}
                     >
                         <AddCircleIcon fontSize="large" />
                     </IconButton>
+                    } 
                 </CardActions>
             </Card>
         </Grid>

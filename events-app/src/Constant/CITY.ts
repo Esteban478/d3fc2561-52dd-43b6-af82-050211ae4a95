@@ -1,4 +1,4 @@
-enum City {
+enum CITY {
     LONDON = 'LONDON'
 }
-export default City
+export default CITY
