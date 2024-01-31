@@ -24,7 +24,9 @@ function Events(): JSX.Element {
   usePathAsTitle(setTitle);
 
   const filteredEvents = events.filter(event =>
-    event.title.toLowerCase().includes(searchText.toLowerCase())
+    event.title.toLowerCase().includes(searchText.toLowerCase()) ||
+    event.venue.name.toLowerCase().includes(searchText.toLowerCase()) ||
+    event.artists.some(artist => artist.name.toLowerCase().includes(searchText.toLowerCase()))
   );
 
   const sortedEvents: { [date: string]: Event[] } = filteredEvents.reduce((acc, event: Event) => {
@@ -123,9 +125,9 @@ function Events(): JSX.Element {
                   endTime={event.endTime}
                   attending={event.attending}
                   venue={event.venue}
+                  artists={event.artists}
                 />
               ))}
-
             </Grid>
           ))}
         </Grid>

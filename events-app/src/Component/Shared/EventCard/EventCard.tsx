@@ -8,6 +8,7 @@ import {
     Typography,
     IconButton,
     CardActions,
+    Tooltip,
 } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
@@ -17,6 +18,7 @@ import { Event } from '../../../Types/Event';
 import { Venue } from '../../../Types/Venue';
 import LOCALE from '../../../Constant/LOCALE';
 import URL from '../../../Constant/URL';
+import { Artist } from '../../../Types';
 
 interface EventCardProps {
     event: Event;
@@ -27,6 +29,7 @@ interface EventCardProps {
     endTime: string;
     attending: number;
     venue: Venue;
+    artists: Artist[];
     handleAddToCart?: (event: any) => void;
     handleRemoveFromCart?: (event: any) => void;
 }
@@ -39,12 +42,17 @@ const EventCard = ({
     endTime,
     attending,
     venue,
+    artists,
     id,
     handleAddToCart,
     handleRemoveFromCart
 }: EventCardProps) => {
     const handleOpenDirection = () => {
         window.open(venue.direction, '_blank');
+    };
+
+    const getArtistNames = (artists: Artist[]) => {
+        return artists.map((artist) => artist.name).join(', ');
     };
 
     return (
@@ -96,6 +104,11 @@ const EventCard = ({
                             second: 'numeric',
                         })}
                     </Typography>
+                    <Tooltip title={getArtistNames(artists)}>
+                        <Typography noWrap variant="body2" color="text.secondary">
+                            {getArtistNames(artists)}
+                        </Typography>
+                    </Tooltip>
                     <div style={{ display: 'inline-flex', padding: 4 }}>
                         <Typography variant="body2" color="text.secondary">
                             {attending}

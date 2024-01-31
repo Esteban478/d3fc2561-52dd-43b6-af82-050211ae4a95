@@ -79,7 +79,8 @@ function Cart(): JSX.Element {
                 startTime={event.startTime}
                 endTime={event.endTime}
                 attending={event.attending}
-                venue={event.venue}            
+                venue={event.venue}      
+                artists={event.artists}      
                 />
             ))}
           </Grid>
