@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Navigate, useRoutes } from 'react-router-dom';
 import Events from './Component/Events';
 import Cart from './Component/Cart';
 import { useState } from 'react';
@@ -59,10 +59,10 @@ function App() {
   const sortedEvents: { [date: string]: Event[] } = filteredEvents.reduce(
     (acc, event: Event) => {
       const formattedDate = formatDate(event.date, LOCALE.US, {
-        weekday: `${DATE_FORMAT.WEEKDAY_SHORT}`,
-        month: `${DATE_FORMAT.MONTH_SHORT}`,
-        day: `${DATE_FORMAT.YEAR_NUMERIC}`,
-        year: `${DATE_FORMAT.YEAR_NUMERIC}`,
+        weekday: `${DATE_FORMAT.SHORT}`,
+        month: `${DATE_FORMAT.SHORT}`,
+        day: `${DATE_FORMAT.NUMERIC}`,
+        year: `${DATE_FORMAT.NUMERIC}`,
       });
       if (acc[formattedDate]) {
         acc[formattedDate].push(event);
@@ -81,39 +81,43 @@ function App() {
     LOCALE.DE
   );
 
+  const appRoutes = useRoutes([
+    {
+      path: '/events',
+      element: <Events
+        searchText={searchText}
+        sortedEvents={sortedEvents}
+        cartItems={cartItems}
+        oldestDate={oldestDate}
+        newestDate={newestDate}
+        handleSearch={handleSearch}
+        handleResetFilter={handleResetFilter}
+        handleAddToCart={handleAddToCart}
+      />
+    },
+    {
+      path: '/cart',
+      element: <Cart
+        searchText={searchText}
+        cartItems={cartItems}
+        handleSearch={handleSearch}
+        handleResetFilter={handleResetFilter}
+        handleRemoveFromCart={handleRemoveFromCart}
+      />
+    },
+    {
+      path: '/',
+      element: <Navigate to="/events" />
+    }
+  ]);
+
+  return appRoutes;
+ }
+
+ export default function AppWithRouter() {
   return (
     <Router>
-      <Routes>
-        <Route
-          path="/events"
-          element={
-            <Events
-              searchText={searchText}
-              sortedEvents={sortedEvents}
-              cartItems={cartItems}
-              oldestDate={oldestDate}
-              newestDate={newestDate}
-              handleSearch={handleSearch}
-              handleResetFilter={handleResetFilter}
-              handleAddToCart={handleAddToCart}
-            />
-          }
-        />
-        <Route
-          path="/cart"
-          element={
-            <Cart
-              searchText={searchText}
-              cartItems={cartItems}
-              handleSearch={handleSearch}
-              handleResetFilter={handleResetFilter}
-              handleRemoveFromCart={handleRemoveFromCart}
-            />
-          }
-        />
-      </Routes>
+      <App />
     </Router>
   );
 }
-
-export default App;

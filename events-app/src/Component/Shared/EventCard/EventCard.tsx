@@ -20,6 +20,7 @@ import { Venue } from '../../../Types/Venue';
 import LOCALE from '../../../Constant/LOCALE';
 import URL from '../../../Constant/URL';
 import { Artist } from '../../../Types';
+import DATE_FORMAT from '../../../Constant/DATE_FORMAT';
 
 interface EventCardProps {
     event: Event;
@@ -92,17 +93,17 @@ const EventCard = ({
                     <Typography variant="body2" color="text.secondary">
                         Starts:{' '}
                         {formatDate(startTime, LOCALE.DE, {
-                            hour: 'numeric',
-                            minute: 'numeric',
-                            second: 'numeric',
+                            hour: `${DATE_FORMAT.NUMERIC}`,
+                            minute: `${DATE_FORMAT.NUMERIC}`,
+                            second: `${DATE_FORMAT.NUMERIC}`,
                         })}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                         Ends:{' '}
                         {formatDate(endTime, LOCALE.DE, {
-                            hour: 'numeric',
-                            minute: 'numeric',
-                            second: 'numeric',
+                            hour: `${DATE_FORMAT.NUMERIC}`,
+                            minute: `${DATE_FORMAT.NUMERIC}`,
+                            second: `${DATE_FORMAT.NUMERIC}`,
                         })}
                     </Typography>
                     <Tooltip title={getArtistNames(artists)}>
