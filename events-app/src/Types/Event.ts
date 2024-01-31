@@ -1,5 +1,4 @@
-import { Artist } from ".";
-import { Venue } from "./Venue";
+import { Artist, Venue } from ".";
 
 export interface Event {
   _id: string;
@@ -13,4 +12,4 @@ export interface Event {
   city: string;
   country: string;
   artists: Artist[];
-  }
+}

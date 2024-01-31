@@ -15,12 +15,8 @@ import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import { formatDate } from '../../../Library';
-import { Event } from '../../../Types/Event';
-import { Venue } from '../../../Types/Venue';
-import LOCALE from '../../../Constant/LOCALE';
-import URL from '../../../Constant/URL';
-import { Artist } from '../../../Types';
-import DATE_FORMAT from '../../../Constant/DATE_FORMAT';
+import { Event, Venue, Artist } from '../../../Types/';
+import { LOCALE, URL, DATE_FORMAT } from '../../../Constant';
 
 interface EventCardProps {
     event: Event;

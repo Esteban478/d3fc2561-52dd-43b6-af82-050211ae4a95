@@ -1,9 +1,8 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import PATH from '../Constant/PATH';
-import PAGE_TITLE from '../Constant/TITLE';
+import {PATH, PAGE_TITLE} from '../Constant';
 
-const usePathAsTitle = (setTitle: (title: string) => void): void => {
+export const usePathAsTitle = (setTitle: (title: string) => void): void => {
     const location = useLocation();
 
     useEffect(() => {
@@ -17,5 +16,3 @@ const usePathAsTitle = (setTitle: (title: string) => void): void => {
         }
     }, [location, setTitle]);
 };
-
-export default usePathAsTitle;

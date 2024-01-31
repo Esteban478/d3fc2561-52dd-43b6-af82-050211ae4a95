@@ -1,12 +1,11 @@
+import { useState } from 'react';
 import { BrowserRouter as Router, Navigate, useRoutes } from 'react-router-dom';
 import Events from './Component/Events';
 import Cart from './Component/Cart';
-import { useState } from 'react';
-import useFetchEvents from './Effects/useFetchEvents';
-import { Event } from './Types/Event';
+import { useFetchEvents } from './Effects';
+import { Event } from './Types';
 import { formatDate } from './Library';
-import LOCALE from './Constant/LOCALE';
-import DATE_FORMAT from './Constant/DATE_FORMAT';
+import { LOCALE, DATE_FORMAT} from './Constant';
 
 function App() {
   const [events, setEvents] = useState<Event[]>([]);

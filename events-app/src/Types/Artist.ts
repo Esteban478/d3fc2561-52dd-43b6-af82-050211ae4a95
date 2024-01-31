@@ -3,5 +3,5 @@ export interface Artist {
     name: string;
     _id: {
         $oid: string;
-        };
-    }
+    };
+}

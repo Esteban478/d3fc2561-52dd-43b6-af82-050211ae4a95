@@ -14,7 +14,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 import FilterAltOffOutlinedIcon from '@mui/icons-material/FilterAltOffOutlined';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
-import PATH from '../../../Constant/PATH';
+import { PATH } from '../../../Constant';
 
 interface TitleBarProps {
   searchText: string;

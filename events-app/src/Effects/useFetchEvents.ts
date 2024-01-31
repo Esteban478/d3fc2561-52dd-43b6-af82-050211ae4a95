@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { Event } from '../Types/Event';
-import URL from '../Constant/URL';
+import { URL } from '../Constant';
 
-const useFetchEvents = (setEvents: (events: Event[]) => void): void => {
+export const useFetchEvents = (setEvents: (events: Event[]) => void): void => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -20,5 +20,3 @@ const useFetchEvents = (setEvents: (events: Event[]) => void): void => {
     fetchEvents();
   }, [setEvents]);
 };
-
-export default useFetchEvents;

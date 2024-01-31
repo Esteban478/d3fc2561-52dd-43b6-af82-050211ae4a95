@@ -1,15 +1,14 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Avatar, Box, Chip, Grid } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { Event } from '../../Types';
-import EventCard from '../Shared/EventCard/EventCard';
-import TitleBar from '../Shared/TitleBar/TitleBar';
-import CITY from '../../Constant/CITY';
+import { PATH, CITY } from '../../Constant';
+import { usePathAsTitle } from '../../Effects';
+import EventCard from '../Shared/EventCard';
+import TitleBar from '../Shared/TitleBar';
 import flag_gb from '../../Assets/flag_gb.png';
-import { useNavigate } from 'react-router-dom';
-import PATH from '../../Constant/PATH';
-import usePathAsTitle from '../../Effects/usePathAsTitle';
-import { useState } from 'react';
 
 interface EventsProps {
   searchText: string;
@@ -37,11 +36,9 @@ function Events({
 
   const navigate = useNavigate();
 
-
   const handleOpenCart = () => {
     navigate(PATH.CART, { replace: false });
   };
-
 
   return (
     <HelmetProvider>
