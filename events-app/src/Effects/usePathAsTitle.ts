@@ -12,6 +12,8 @@ const usePathAsTitle = (setTitle: (title: string) => void): void => {
             setTitle(PAGE_TITLE.EVENTS);
         } else if (location.pathname === PATH.CART) {
             setTitle(PAGE_TITLE.CART);
+        } else {
+            setTitle(PAGE_TITLE.DEFAULT);
         }
     }, [location, setTitle]);
 };

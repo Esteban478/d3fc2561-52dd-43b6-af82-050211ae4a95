@@ -13,6 +13,7 @@ import {
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import { formatDate } from '../../../Library';
 import { Event } from '../../../Types/Event';
 import { Venue } from '../../../Types/Venue';
@@ -133,15 +134,15 @@ const EventCard = ({
                         aria-label="remove from cart"
                         onClick={() => handleRemoveFromCart(event)}
                     >
-                        <AddCircleIcon fontSize="large" />
+                        <RemoveCircleIcon fontSize="large" />
                     </IconButton>
                     }
                     {
-                    handleAddToCart && <IconButton
+                        handleAddToCart && <IconButton
                         color="primary"
                         aria-label="add to cart"
                         onClick={() => handleAddToCart(event)}
-                    >
+                        >
                         <AddCircleIcon fontSize="large" />
                     </IconButton>
                     } 

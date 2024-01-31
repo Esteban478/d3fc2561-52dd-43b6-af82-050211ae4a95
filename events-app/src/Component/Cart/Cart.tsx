@@ -7,34 +7,24 @@ import usePathAsTitle from '../../Effects/usePathAsTitle';
 import TitleBar from '../Shared/TitleBar/TitleBar';
 import EventCard from '../Shared/EventCard/EventCard';
 
-function Cart(): JSX.Element {
-  const [events, setEvents] = useState<Event[]>([]);
+interface CartProps {
+  searchText: string;
+  cartItems: Event[];
+  handleSearch: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleResetFilter: () => void;
+  handleRemoveFromCart: (event: Event) => void;
+}
+
+function Cart({
+  searchText,
+  cartItems,
+  handleSearch,
+  handleResetFilter,
+  handleRemoveFromCart
+}: CartProps): JSX.Element {
   const [title, setTitle] = useState<string>();
-  const [searchText, setSearchText] = useState('');
 
   usePathAsTitle(setTitle);
-
-  const [cartItems, setCartItems] = useState([] as Event[]);
-
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => { 
-    setSearchText(event.target.value)
-  }
-
-  const handleRemoveFromCart = (event: Event) => {
-    // Remove the event from events
-    const updatedCartItems = cartItems.filter((e: Event) => e._id !== event._id);
-
-    // Add the event to the cartItems
-    const updatedEvents = [...events, event];
-
-    // Update the state
-    setEvents(updatedEvents);
-    setCartItems(updatedCartItems);
-  };
-
-  const handleResetFilter = () => {
-    setSearchText('')
-  }    
 
   return (
     <HelmetProvider>
